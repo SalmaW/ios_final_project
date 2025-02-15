@@ -1,24 +1,33 @@
-//
-//  ContentView.swift
-//  ios_final_proj
-//
-//  Created by Wael Maarouf on 14/02/2025.
-//
-
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @EnvironmentObject var languageManager: LanguageManager
+    @State private var isLoggedIn: Bool? = nil
 
-#Preview {
-    ContentView()
+    var body: some View {
+        Group {
+            if let isLoggedIn = isLoggedIn {
+                if isLoggedIn {
+                    HomeScreen()
+                } else {
+                    WelcomeScreen()
+                }
+            } else {
+                ProgressView()
+                    .onAppear {
+                        checkLoginStatus()
+                    }
+            }
+        }
+        .environmentObject(languageManager)
+    }
+
+    private func checkLoginStatus() {
+        if Auth.auth().currentUser != nil {
+            isLoggedIn = true
+        } else {
+            isLoggedIn = false
+        }
+    }
 }
