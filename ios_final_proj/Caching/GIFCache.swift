@@ -1,9 +1,3 @@
-//
-//  GIFCache.swift
-//  Headway
-//
-//  Created by omar abozeid on 01/02/2025.
-//
 import SDWebImageSwiftUI
 import Foundation
 
@@ -20,13 +14,12 @@ actor GIFCache {
     
     func cacheGIFs(_ gifs: [Gif]) async {
         do {
-            // Convert API models to cacheable models
+            
             let cachedGifs = gifs.map { CachedGif(from: $0) }
             let data = try JSONEncoder().encode(cachedGifs)
             let fileURL = cacheDirectory.appendingPathComponent("trending.json")
             try data.write(to: fileURL)
             
-            // Cache images
             for gif in gifs {
                 if let url = URL(string: gif.media_formats.tinygif.url) {
                     if let imageData = try? await downloadImage(from: url) {
@@ -35,6 +28,7 @@ actor GIFCache {
                     }
                 }
             }
+            
         } catch {
             print("Failed to cache GIFs: \(error)")
         }
@@ -46,7 +40,7 @@ actor GIFCache {
               let cachedGifs = try? JSONDecoder().decode([CachedGif].self, from: data) else {
             return nil
         }
-        // Convert cached models back to API models
+        
         return cachedGifs.map { $0.toApiGif() }
     }
     
